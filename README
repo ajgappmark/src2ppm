@@ -1,0 +1,19 @@
+
+# 1st try to build with cmake
+MISSING_REQ=0
+for req in cmake make;do
+	type $req >/dev/null 2>&1 || { echo >&2 "Missing dependency: $req"; MISSING_REQ=1; }
+done
+[ $MISSING_REQ -eq 0 ] && { mkdir build; cd build; cmake ..; make; exit 0;}
+
+
+# 2nd try to build with compiler 
+MISSING_REQ=0
+for req in cc;do
+	type $req >/dev/null 2>&1 || { echo >&2 "Missing dependency: $req"; MISSING_REQ=1; }
+done
+[ $MISSING_REQ -eq 0 ] && { mkdir build; cd build; cc -lX10 -L/usr/include/X11 ../scr2ppm.c -o scr2ppm; exit 0;}
+
+# i give up 
+echo "build failed, no useable compiler or build system found"
+
