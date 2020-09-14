@@ -98,9 +98,9 @@ selectWindow(
 
     XEvent ev;
 
-    Cursor cursor, cursor2;
+    Cursor cursor /*, cursor2*/;
     cursor = XCreateFontCursor(disp, XC_left_ptr);
-    cursor2 = XCreateFontCursor(disp, XC_lr_angle);
+    //cursor2 = XCreateFontCursor(disp, XC_lr_angle);
 
     if ((XGrabPointer
                  (disp, *root, False,
