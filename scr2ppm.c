@@ -98,14 +98,14 @@ selectWindow(
 
     XEvent ev;
 
-    Cursor cursor /*, cursor2*/;
+    //Cursor cursor /*, cursor2*/;
     //cursor = XCreateFontCursor(disp, XC_left_ptr);
     //cursor2 = XCreateFontCursor(disp, XC_lr_angle);
 
     if ((XGrabPointer
                  (disp, *root, False,
                   ButtonPressMask, GrabModeAsync,
-                  GrabModeAsync, *root, cursor, CurrentTime) != GrabSuccess)) {
+                  GrabModeAsync, *root, None, CurrentTime) != GrabSuccess)) {
         //printf("couldn't grab pointer:\n");
         return -1;
     }
@@ -143,9 +143,11 @@ selectArea(
 
     XEvent ev;
 
+    /*
     Cursor cursor, cursor2;
-    //cursor = XCreateFontCursor(disp, XC_left_ptr);
-    //cursor2 = XCreateFontCursor(disp, XC_lr_angle);
+    cursor = XCreateFontCursor(disp, XC_left_ptr);
+    cursor2 = XCreateFontCursor(disp, XC_lr_angle);
+	*/
 
     /**/
     XGCValues gcval;
@@ -164,7 +166,7 @@ selectArea(
     if ((XGrabPointer
                  (disp, *root, False,
                   ButtonMotionMask | ButtonPressMask | ButtonReleaseMask, GrabModeAsync,
-                  GrabModeAsync, *root, cursor, CurrentTime) != GrabSuccess)) {
+                  GrabModeAsync, *root, /*cursor*/ None, CurrentTime) != GrabSuccess)) {
         //printf("couldn't grab pointer:");
         return -1;
     }
@@ -181,9 +183,11 @@ selectArea(
                             XDrawRectangle(disp, *root, gc, rect_x, rect_y, rect_w, rect_h);
                         } else {
                             /* Change the cursor to show we're selecting a region */
+			    /*
                             XChangeActivePointerGrab(disp,
                                                      ButtonMotionMask | ButtonReleaseMask,
                                                      cursor2, CurrentTime);
+						     */
                         }
                         rect_x = rx;
                         rect_y = ry;
@@ -220,9 +224,11 @@ selectArea(
     /* clear the drawn rectangle */
     if (rect_w) {
 	/* reset cursor style */
+	    /*
      	XChangeActivePointerGrab(disp,
 		             ButtonMotionMask | ButtonReleaseMask,
                             cursor, CurrentTime);
+			    */
 	// clear rectangle 
         XDrawRectangle(disp, *root, gc, rect_x, rect_y, rect_w, rect_h);
 	// commit 
