@@ -115,12 +115,16 @@ selectWindow(
             XNextEvent(disp, &ev);
             switch (ev.type) {
                 case ButtonPress:
+    		    XUngrabPointer(disp, CurrentTime);
+    		    XFlush(disp);
                     return getWindowGeometry(disp, &ev.xbutton.subwindow, rect);
                 default:
                     break;
             }
         }
     }
+    XUngrabPointer(disp, CurrentTime);
+    XFlush(disp);
     return -1;
 }
 
@@ -141,6 +145,7 @@ selectArea(
     cursor = XCreateFontCursor(disp, XC_left_ptr);
     cursor2 = XCreateFontCursor(disp, XC_lr_angle);
 
+    /**/
     XGCValues gcval;
     gcval.foreground = XWhitePixel(disp, 0);
     gcval.function = GXxor;
@@ -152,7 +157,7 @@ selectArea(
     gc = XCreateGC(disp, *root,
                    GCFunction | GCForeground | GCBackground | GCSubwindowMode,
                    &gcval);
-
+    /**/
     /* this XGrab* stuff makes XPending true ? */
     if ((XGrabPointer
                  (disp, *root, False,
@@ -202,14 +207,23 @@ selectArea(
                     ry = ev.xbutton.y;
                     break;
                 case ButtonRelease:
+
                     done = 1;
                     break;
-            }
-        }
-    }
+            } // switch
+        } // XPending while
+    } // done while
+
     /* clear the drawn rectangle */
     if (rect_w) {
+	/* reset cursor style */
+     	XChangeActivePointerGrab(disp,
+		             ButtonMotionMask | ButtonReleaseMask,
+                            cursor, CurrentTime);
+	XUngrabPointer(disp, CurrentTime);
+	// clear rectangle 
         XDrawRectangle(disp, *root, gc, rect_x, rect_y, rect_w, rect_h);
+	// commit 
         XFlush(disp);
     }
     rw = ev.xbutton.x - rx;
@@ -267,10 +281,12 @@ main(
     if(disp == NULL) { usage(argv[0], "ERR: failed to open display"); } 
 
     Window root = XDefaultRootWindow(disp);
+
+
     switch (mode) 
     {
 	    case 1: ret = selectWindow(disp, &root, &rect);      break;
-	    case 2: ret = selectArea(disp, &root, &rect);        break;
+	    case 2: ret = selectArea(disp, &root, &rect);   break;
 	    default:ret = getWindowGeometry(disp, &root, &rect); break;
     }
 
@@ -281,16 +297,17 @@ main(
 	    usage(argv[0], "ERR: failed to get selection"); 
     } 
 
-    // wait for delay seconds / timeout  
+    // wait for delay seconds / timeout
     if(delay > 0) { sleep(delay); }
 
     // get Image Data
     image = XGetImage(disp, root, rect.x, rect.y, rect.w, rect.h, AllPlanes, ZPixmap);
 
-    XDestroyWindow(disp, root); 
-    XCloseDisplay(disp);
 
     if (image == NULL) { 
+	    XDestroyWindow(disp, root); 
+	    XCloseDisplay(disp);
+	    //XFreeGC(disp, gc);
 	    usage(argv[0], "ERR: failed to get image data"); 
     }
 
@@ -311,6 +328,8 @@ main(
 
    // release image memory 
    XDestroyImage(image);
+   XDestroyWindow(disp, root); 
+   XCloseDisplay(disp);
 
    return 0;
 }

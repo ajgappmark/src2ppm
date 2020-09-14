@@ -1,2 +1,6 @@
-/build
+/CMakeCache.txt
+/CMakeFiles/
+/Makefile
+/build/
+/cmake_install.cmake
 /scr2ppm
