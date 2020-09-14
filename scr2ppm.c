@@ -98,8 +98,8 @@ selectWindow(
 
     XEvent ev;
 
-    //Cursor cursor /*, cursor2*/;
-    Cursor cursor = XCreateFontCursor(disp, XC_left_ptr);
+    Cursor cursor /*, cursor2*/;
+    //cursor = XCreateFontCursor(disp, XC_left_ptr);
     //cursor2 = XCreateFontCursor(disp, XC_lr_angle);
 
     if ((XGrabPointer
@@ -115,8 +115,8 @@ selectWindow(
             XNextEvent(disp, &ev);
             switch (ev.type) {
                 case ButtonPress:
-		    XFreeCursor(disp, cursor);
     		    XUngrabPointer(disp, CurrentTime);
+		    //XFreeCursor(disp, cursor);
     		    XFlush(disp);
                     return getWindowGeometry(disp, &ev.xbutton.subwindow, rect);
                 default:
@@ -124,8 +124,8 @@ selectWindow(
             }
         }
     }
-    XFreeCursor(disp, cursor);
     XUngrabPointer(disp, CurrentTime);
+    //XFreeCursor(disp, cursor);
     XFlush(disp);
     return -1;
 }
@@ -144,8 +144,8 @@ selectArea(
     XEvent ev;
 
     Cursor cursor, cursor2;
-    cursor = XCreateFontCursor(disp, XC_left_ptr);
-    cursor2 = XCreateFontCursor(disp, XC_lr_angle);
+    //cursor = XCreateFontCursor(disp, XC_left_ptr);
+    //cursor2 = XCreateFontCursor(disp, XC_lr_angle);
 
     /**/
     XGCValues gcval;
@@ -215,21 +215,21 @@ selectArea(
             } // switch
         } // XPending while
     } // done while
+	XUngrabPointer(disp, CurrentTime);
 
-    XFreeCursor(disp, cursor);
-    XFreeCursor(disp, cursor2);
     /* clear the drawn rectangle */
     if (rect_w) {
 	/* reset cursor style */
      	XChangeActivePointerGrab(disp,
 		             ButtonMotionMask | ButtonReleaseMask,
                             cursor, CurrentTime);
-	XUngrabPointer(disp, CurrentTime);
 	// clear rectangle 
         XDrawRectangle(disp, *root, gc, rect_x, rect_y, rect_w, rect_h);
 	// commit 
         XFlush(disp);
     }
+        //XFreeCursor(disp, cursor);
+        //XFreeCursor(disp, cursor2);
     rw = ev.xbutton.x - rx;
     rh = ev.xbutton.y - ry;
     /* cursor moves backwards */
